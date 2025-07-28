@@ -206,10 +206,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### v1.2.0 (2025-07-28)
 - Added 3D Scatter Surface chart combining point cloud and surface visualization
-- Implemented multiple data patterns (Wave, Gaussian, Saddle, Ripple)
+- Implemented multiple data patterns including complex dataset generator
+- Complex dataset pattern creates realistic data visualization with multiple overlapping features
 - Added resolution control slider (10x10 to 50x50)
 - Toggle controls for showing/hiding points and surface independently
 - Interactive legend box for series visibility
+- Real-time animation support for all data patterns
+- Fixed surface animation using column-ordered data structure
 
 ### v1.1.0 (2025-07-28)
 - Added animated 3D surface plot with real-time wave animation
