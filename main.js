@@ -423,11 +423,12 @@ window.addEventListener('load', () => {
                 const intensityData = []
                 const phase = time * 0.1  // Much faster animation for testing
                 
-                for (let row = 0; row < resolution; row++) {
-                    const rowDataY = []
-                    const rowIntensity = []
+                // Generate data in column order
+                for (let col = 0; col < resolution; col++) {
+                    const colDataY = []
+                    const colIntensity = []
                     
-                    for (let col = 0; col < resolution; col++) {
+                    for (let row = 0; row < resolution; row++) {
                         const x = -5 + (col / (resolution - 1)) * 10
                         const z = -5 + (row / (resolution - 1)) * 10
                         let y, intensity
@@ -463,12 +464,12 @@ window.addEventListener('load', () => {
                         // Add small fixed noise to points (using position as seed for consistency)
                         const noisyY = y + (Math.sin(x * 10 + z * 10) * 0.02)
                         points.push({ x, y: noisyY, z })
-                        rowDataY.push(y)
-                        rowIntensity.push(intensity)
+                        colDataY.push(y)
+                        colIntensity.push(intensity)
                     }
                     
-                    surfaceDataY.push(rowDataY)
-                    intensityData.push(rowIntensity)
+                    surfaceDataY.push(colDataY)
+                    intensityData.push(colIntensity)
                 }
                 
                 return { points, surfaceDataY, intensityData, resolution }
@@ -485,7 +486,7 @@ window.addEventListener('load', () => {
             
             // Add surface series
             surfaceSeries = scatterSurfaceChart.addSurfaceGridSeries({
-                dataOrder: 'rows',
+                dataOrder: 'columns',
                 columns: currentResolution,
                 rows: currentResolution
             })
@@ -511,12 +512,8 @@ window.addEventListener('load', () => {
                 pointSeries.clear()
                 pointSeries.add(newData.points)
                 
-                // Update surface series - need to recreate for proper update
-                surfaceSeries
-                    .setColumns(currentResolution)
-                    .setRows(currentResolution)
-                    .setStep({ x: 10 / (currentResolution - 1), z: 10 / (currentResolution - 1) })
-                    .invalidateHeightMap(newData.surfaceDataY)
+                // Update surface series
+                surfaceSeries.invalidateHeightMap(newData.surfaceDataY)
                 
                 // Update the data reference
                 data = newData
@@ -556,6 +553,13 @@ window.addEventListener('load', () => {
                     currentResolution = parseInt(e.target.value)
                     resolutionValue.textContent = currentResolution
                     resolutionValue2.textContent = currentResolution
+                    
+                    // Need to update surface configuration when resolution changes
+                    surfaceSeries
+                        .setColumns(currentResolution)
+                        .setRows(currentResolution)
+                        .setStep({ x: 10 / (currentResolution - 1), z: 10 / (currentResolution - 1) })
+                    
                     updateScatterSurface(!!scatterAnimationFrame)  // Keep animation state
                 })
             }
