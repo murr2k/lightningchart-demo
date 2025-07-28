@@ -5,6 +5,7 @@ A comprehensive demonstration of LightningChart JS capabilities featuring 6 diff
 ![LightningChart JS](https://img.shields.io/badge/LightningChart-JS-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)
+![Version](https://img.shields.io/badge/version-1.1.0-orange)
 
 ## 🚀 Features
 
@@ -15,13 +16,14 @@ This demo showcases:
 - **Pie Chart** - Market share distribution
 - **Area Chart** - Stacked area visualization
 - **Real-time Streaming Chart** - Live data updates with auto-scrolling
-- **3D Surface Plot** - Interactive 3D sine wave surface (with 2D heatmap fallback)
+- **3D Surface Plot** - Interactive 3D animated wave surface (with 2D heatmap fallback)
 
 ### Interactive Controls
 
 - **Start/Stop Real-time Data** - Control live data streaming
 - **Add Random Data** - Dynamically add new data points
 - **Clear All Data** - Reset all charts to empty state
+- **3D Animation Controls** - Play/Pause animation and adjust wave frequency
 
 ## 📋 Prerequisites
 
@@ -104,10 +106,11 @@ lightningchart-demo/
 - Start/Stop controls
 
 ### 6. 3D Surface Plot
-- Interactive 3D sine wave surface
+- Interactive 3D animated wave surface
+- Real-time wave animation with Play/Pause controls
+- Adjustable wave frequency with slider (0.1 - 3.0)
 - Drag to rotate view
 - Falls back to 2D heatmap if WebGL unavailable
-- Color-coded by height values
 
 ## 🧪 Testing
 
@@ -137,6 +140,47 @@ This will:
 2. Create the chart in `main.js` using the LightningChart API
 3. Add any interactive controls as needed
 
+### Implementing 3D Animation (v1.1.0)
+
+The 3D surface animation was implemented by creating a data generator that updates the point data array:
+
+```javascript
+// Data generator function for animated wave
+const generateAnimatedData = (time) => {
+    const points3D = []
+    const size = 15
+    const phase = time * 0.02
+    
+    for (let x = 0; x < size; x++) {
+        for (let z = 0; z < size; z++) {
+            const xVal = (x - size/2) * 0.5
+            const zVal = (z - size/2) * 0.5
+            const r = Math.sqrt(xVal * xVal + zVal * zVal)
+            
+            // Animated wave equation
+            const yVal = Math.sin(r * frequency - phase) * Math.exp(-r * 0.3) * 2
+            
+            points3D.push({ x: xVal, y: yVal, z: zVal })
+        }
+    }
+    return points3D
+}
+
+// Animation loop
+const animate3D = () => {
+    pointSeries3D.clear()
+    pointSeries3D.add(generateAnimatedData(animationTime))
+    animationTime++
+}
+```
+
+Key implementation details:
+- The chart rendering code remains unchanged
+- Animation is achieved by updating the data array with new Y values
+- `requestAnimationFrame` is used for smooth 60fps animation
+- Frequency control adjusts the wave pattern in real-time
+- The data interface (`{x, y, z}` objects) stays consistent
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -148,6 +192,20 @@ This will:
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📈 Changelog
+
+### v1.1.0 (2025-01-28)
+- Added animated 3D surface plot with real-time wave animation
+- Implemented Play/Pause controls for 3D animation
+- Added frequency slider to control wave pattern (0.1 - 3.0 range)
+- Updated documentation with implementation details
+
+### v1.0.0 (2025-01-28)
+- Initial release with 6 chart types
+- Real-time streaming capabilities
+- Interactive controls
+- Comprehensive documentation
 
 ## 🔗 Resources
 

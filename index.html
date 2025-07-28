@@ -97,6 +97,33 @@
             flex: 1;
             text-align: center;
         }
+        
+        .slider-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        #frequency-slider {
+            width: 80%;
+            margin: 10px 0;
+        }
+        
+        .slider-controls {
+            margin-top: 10px;
+        }
+        
+        .slider-controls button {
+            margin: 0 5px;
+        }
     </style>
 </head>
 <body>
@@ -140,6 +167,14 @@
             <div class="chart-wrapper full-width">
                 <div class="chart-title">3D Surface Plot</div>
                 <div id="chart-3d" class="chart-container"></div>
+                <div class="slider-container">
+                    <label for="frequency-slider">Wave Frequency: <span id="frequency-value">1.0</span></label>
+                    <input type="range" id="frequency-slider" min="0.1" max="3.0" step="0.1" value="1.0">
+                    <div class="slider-controls">
+                        <button id="play3d">Play Animation</button>
+                        <button id="pause3d">Pause Animation</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

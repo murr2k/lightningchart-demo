@@ -175,6 +175,10 @@ window.addEventListener('load', () => {
         // 6. 3D Surface Chart or Alternative
         console.log('Creating 3D chart...')
         
+        let animationFrame = null
+        let animationTime = 0
+        let frequency = 1.0
+        
         try {
             // Check if WebGL is available
             const canvas = document.createElement('canvas')
@@ -193,25 +197,40 @@ window.addEventListener('load', () => {
             const pointSeries3D = chart3D.addPointSeries()
             pointSeries3D.setName('3D Surface Points')
             
-            // Generate 3D point data
-            const points3D = []
-            const size = 15
-            for (let x = 0; x < size; x++) {
-                for (let z = 0; z < size; z++) {
-                    const xVal = (x - size/2) * 0.5
-                    const zVal = (z - size/2) * 0.5
-                    const r = Math.sqrt(xVal * xVal + zVal * zVal)
-                    const yVal = r === 0 ? 2 : 2 * Math.sin(r) / r
-                    
-                    points3D.push({
-                        x: xVal,
-                        y: yVal,
-                        z: zVal
-                    })
+            // Data generator function for animated wave
+            const generateAnimatedData = (time) => {
+                const points3D = []
+                const size = 15
+                const phase = time * 0.02
+                
+                for (let x = 0; x < size; x++) {
+                    for (let z = 0; z < size; z++) {
+                        const xVal = (x - size/2) * 0.5
+                        const zVal = (z - size/2) * 0.5
+                        const r = Math.sqrt(xVal * xVal + zVal * zVal)
+                        
+                        // Animated wave equation
+                        const yVal = Math.sin(r * frequency - phase) * Math.exp(-r * 0.3) * 2
+                        
+                        points3D.push({
+                            x: xVal,
+                            y: yVal,
+                            z: zVal
+                        })
+                    }
                 }
+                return points3D
             }
             
-            pointSeries3D.add(points3D)
+            // Initial data
+            pointSeries3D.add(generateAnimatedData(0))
+            
+            // Animation function
+            const animate3D = () => {
+                pointSeries3D.clear()
+                pointSeries3D.add(generateAnimatedData(animationTime))
+                animationTime++
+            }
             
             // Configure axes
             chart3D.getDefaultAxisX().setTitle('X')
@@ -220,6 +239,44 @@ window.addEventListener('load', () => {
             
             // Set camera
             chart3D.setCameraLocation({ x: 2, y: 2, z: 2 })
+            
+            // Animation controls
+            const play3dBtn = document.getElementById('play3d')
+            const pause3dBtn = document.getElementById('pause3d')
+            
+            if (play3dBtn) {
+                play3dBtn.addEventListener('click', () => {
+                    if (!animationFrame) {
+                        const loop = () => {
+                            animate3D()
+                            animationFrame = requestAnimationFrame(loop)
+                        }
+                        loop()
+                        updateStatus('3D animation started')
+                    }
+                })
+            }
+            
+            if (pause3dBtn) {
+                pause3dBtn.addEventListener('click', () => {
+                    if (animationFrame) {
+                        cancelAnimationFrame(animationFrame)
+                        animationFrame = null
+                        updateStatus('3D animation paused')
+                    }
+                })
+            }
+            
+            // Frequency slider control
+            const frequencySlider = document.getElementById('frequency-slider')
+            const frequencyValue = document.getElementById('frequency-value')
+            
+            if (frequencySlider) {
+                frequencySlider.addEventListener('input', (e) => {
+                    frequency = parseFloat(e.target.value)
+                    frequencyValue.textContent = frequency.toFixed(1)
+                })
+            }
             
             console.log('3D chart created successfully')
             
