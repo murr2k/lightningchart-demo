@@ -421,7 +421,7 @@ window.addEventListener('load', () => {
                 const points = []
                 const surfaceDataY = []
                 const intensityData = []
-                const phase = time * 0.02
+                const phase = time * 0.05  // Increased animation speed
                 
                 for (let row = 0; row < resolution; row++) {
                     const rowDataY = []
@@ -434,7 +434,7 @@ window.addEventListener('load', () => {
                         
                         switch (pattern) {
                             case 'wave':
-                                y = Math.sin(x - phase) * Math.cos(z - phase) + (Math.random() - 0.5) * 0.1
+                                y = Math.sin(x - phase) * Math.cos(z - phase)
                                 intensity = y
                                 break
                             case 'gaussian':
@@ -460,8 +460,8 @@ window.addEventListener('load', () => {
                                 break
                         }
                         
-                        // Add some noise to points
-                        const noisyY = y + (Math.random() - 0.5) * 0.05
+                        // Add small fixed noise to points (using position as seed for consistency)
+                        const noisyY = y + (Math.sin(x * 10 + z * 10) * 0.02)
                         points.push({ x, y: noisyY, z })
                         rowDataY.push(y)
                         rowIntensity.push(intensity)
@@ -523,6 +523,9 @@ window.addEventListener('load', () => {
             const animateScatterSurface = () => {
                 updateScatterSurface(true)
                 scatterAnimationTime++
+                if (scatterAnimationTime % 60 === 0) {
+                    console.log('Scatter animation frame:', scatterAnimationTime)
+                }
             }
             
             // Control event listeners
@@ -550,7 +553,7 @@ window.addEventListener('load', () => {
                     currentResolution = parseInt(e.target.value)
                     resolutionValue.textContent = currentResolution
                     resolutionValue2.textContent = currentResolution
-                    updateScatterSurface()
+                    updateScatterSurface(!!scatterAnimationFrame)  // Keep animation state
                 })
             }
             
@@ -569,6 +572,7 @@ window.addEventListener('load', () => {
             if (playScatterBtn) {
                 playScatterBtn.addEventListener('click', () => {
                     if (!scatterAnimationFrame) {
+                        console.log('Starting scatter animation...')
                         const loop = () => {
                             animateScatterSurface()
                             scatterAnimationFrame = requestAnimationFrame(loop)
