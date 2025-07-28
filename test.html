@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LightningChart Test</title>
+    <script type="module">
+        import { lightningChart } from '@lightningchart/lcjs'
+        
+        window.addEventListener('load', () => {
+            try {
+                const lc = lightningChart({
+                    license: "0002-n9xRML+Glr3QwdvnJVsvK6cQVxjGKwDdUQmrn5+yxNjS6P3j9y5OhH9trO5ekaGLuGtbex7ogsCXLl9yKKX4HGcV-MEYCIQDv+5zIdiAu7CLpFCIwjTAfgzsKZUW8vcWsAYGlqWsNvgIhAPUML6w6txdfzdtl94qP69Wb9Lj1ijkB8+XuNjs0qzrn"
+                })
+                
+                const chart = lc.ChartXY({ 
+                    container: document.getElementById('chart') 
+                })
+                
+                chart.setTitle('Test Chart')
+                
+                const series = chart.addLineSeries()
+                series.add([
+                    { x: 0, y: 0 },
+                    { x: 1, y: 1 },
+                    { x: 2, y: 4 },
+                    { x: 3, y: 9 }
+                ])
+                
+                document.getElementById('status').textContent = 'Chart loaded successfully!'
+                
+            } catch (error) {
+                console.error('Error:', error)
+                document.getElementById('status').textContent = 'Error: ' + error.message
+            }
+        })
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #chart { width: 600px; height: 400px; border: 1px solid #ccc; }
+        #status { margin-top: 10px; padding: 10px; background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>LightningChart Test</h1>
+    <div id="chart"></div>
+    <div id="status">Loading...</div>
+</body>
+</html>
