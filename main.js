@@ -421,7 +421,7 @@ window.addEventListener('load', () => {
                 const points = []
                 const surfaceDataY = []
                 const intensityData = []
-                const phase = time * 0.05  // Increased animation speed
+                const phase = time * 0.1  // Much faster animation for testing
                 
                 for (let row = 0; row < resolution; row++) {
                     const rowDataY = []
@@ -505,26 +505,29 @@ window.addEventListener('load', () => {
             // Update function
             const updateScatterSurface = (useTime = false) => {
                 const time = useTime ? scatterAnimationTime : 0
-                data = generateScatterSurfaceData(currentPattern, currentResolution, time)
+                const newData = generateScatterSurfaceData(currentPattern, currentResolution, time)
                 
                 // Update point series
                 pointSeries.clear()
-                pointSeries.add(data.points)
+                pointSeries.add(newData.points)
                 
-                // Update surface series
+                // Update surface series - need to recreate for proper update
                 surfaceSeries
                     .setColumns(currentResolution)
                     .setRows(currentResolution)
                     .setStep({ x: 10 / (currentResolution - 1), z: 10 / (currentResolution - 1) })
-                    .invalidateHeightMap(data.surfaceDataY)
+                    .invalidateHeightMap(newData.surfaceDataY)
+                
+                // Update the data reference
+                data = newData
             }
             
             // Animation function
             const animateScatterSurface = () => {
                 updateScatterSurface(true)
                 scatterAnimationTime++
-                if (scatterAnimationTime % 60 === 0) {
-                    console.log('Scatter animation frame:', scatterAnimationTime)
+                if (scatterAnimationTime % 30 === 0) {
+                    console.log('Scatter animation frame:', scatterAnimationTime, 'pattern:', currentPattern)
                 }
             }
             
