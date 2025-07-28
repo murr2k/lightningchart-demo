@@ -413,12 +413,15 @@ window.addEventListener('load', () => {
             let surfaceSeries = null
             let currentResolution = 25
             let currentPattern = 'wave'
+            let scatterAnimationFrame = null
+            let scatterAnimationTime = 0
             
             // Data generation functions for different patterns
-            const generateScatterSurfaceData = (pattern, resolution) => {
+            const generateScatterSurfaceData = (pattern, resolution, time = 0) => {
                 const points = []
                 const surfaceDataY = []
                 const intensityData = []
+                const phase = time * 0.02
                 
                 for (let row = 0; row < resolution; row++) {
                     const rowDataY = []
@@ -431,23 +434,28 @@ window.addEventListener('load', () => {
                         
                         switch (pattern) {
                             case 'wave':
-                                y = Math.sin(x) * Math.cos(z) + (Math.random() - 0.5) * 0.1
+                                y = Math.sin(x - phase) * Math.cos(z - phase) + (Math.random() - 0.5) * 0.1
                                 intensity = y
                                 break
                             case 'gaussian':
-                                // Multiple gaussian hills
-                                y = Math.exp(-(x*x + z*z) / 8) + 
-                                    0.5 * Math.exp(-((x-2)*(x-2) + (z-2)*(z-2)) / 4) +
-                                    0.7 * Math.exp(-((x+2)*(x+2) + (z+1)*(z+1)) / 6)
+                                // Animated gaussian hills
+                                const offset1 = Math.sin(phase) * 2
+                                const offset2 = Math.cos(phase) * 2
+                                y = Math.exp(-((x-offset1)*(x-offset1) + (z-offset1)*(z-offset1)) / 8) + 
+                                    0.5 * Math.exp(-((x-2-offset2)*(x-2-offset2) + (z-2+offset2)*(z-2+offset2)) / 4) +
+                                    0.7 * Math.exp(-((x+2+offset1)*(x+2+offset1) + (z+1-offset1)*(z+1-offset1)) / 6)
                                 intensity = y
                                 break
                             case 'saddle':
-                                y = (x*x - z*z) / 25
+                                // Rotating saddle
+                                const rotX = x * Math.cos(phase) - z * Math.sin(phase)
+                                const rotZ = x * Math.sin(phase) + z * Math.cos(phase)
+                                y = (rotX*rotX - rotZ*rotZ) / 25
                                 intensity = Math.abs(y)
                                 break
                             case 'ripple':
                                 const r = Math.sqrt(x*x + z*z)
-                                y = Math.sin(r * 2) / (r + 1) * 3
+                                y = Math.sin(r * 2 - phase * 2) / (r + 1) * 3
                                 intensity = y
                                 break
                         }
@@ -495,8 +503,9 @@ window.addEventListener('load', () => {
             scatterSurfaceChart.setCameraLocation({ x: 2.5, y: 2, z: 2.5 })
             
             // Update function
-            const updateScatterSurface = () => {
-                data = generateScatterSurfaceData(currentPattern, currentResolution)
+            const updateScatterSurface = (useTime = false) => {
+                const time = useTime ? scatterAnimationTime : 0
+                data = generateScatterSurfaceData(currentPattern, currentResolution, time)
                 
                 // Update point series
                 pointSeries.clear()
@@ -508,6 +517,12 @@ window.addEventListener('load', () => {
                     .setRows(currentResolution)
                     .setStep({ x: 10 / (currentResolution - 1), z: 10 / (currentResolution - 1) })
                     .invalidateHeightMap(data.surfaceDataY)
+            }
+            
+            // Animation function
+            const animateScatterSurface = () => {
+                updateScatterSurface(true)
+                scatterAnimationTime++
             }
             
             // Control event listeners
@@ -542,7 +557,35 @@ window.addEventListener('load', () => {
             if (patternSelect) {
                 patternSelect.addEventListener('change', (e) => {
                     currentPattern = e.target.value
-                    updateScatterSurface()
+                    scatterAnimationTime = 0  // Reset animation time for smooth transition
+                    updateScatterSurface(!!scatterAnimationFrame)  // Keep animation state
+                })
+            }
+            
+            // Animation controls
+            const playScatterBtn = document.getElementById('play-scatter')
+            const pauseScatterBtn = document.getElementById('pause-scatter')
+            
+            if (playScatterBtn) {
+                playScatterBtn.addEventListener('click', () => {
+                    if (!scatterAnimationFrame) {
+                        const loop = () => {
+                            animateScatterSurface()
+                            scatterAnimationFrame = requestAnimationFrame(loop)
+                        }
+                        loop()
+                        updateStatus('Scatter surface animation started')
+                    }
+                })
+            }
+            
+            if (pauseScatterBtn) {
+                pauseScatterBtn.addEventListener('click', () => {
+                    if (scatterAnimationFrame) {
+                        cancelAnimationFrame(scatterAnimationFrame)
+                        scatterAnimationFrame = null
+                        updateStatus('Scatter surface animation paused')
+                    }
                 })
             }
             
