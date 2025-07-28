@@ -412,7 +412,7 @@ window.addEventListener('load', () => {
             let pointSeries = null
             let surfaceSeries = null
             let currentResolution = 25
-            let currentPattern = 'wave'
+            let currentPattern = 'dataset'
             let scatterAnimationFrame = null
             let scatterAnimationTime = 0
             
@@ -434,6 +434,44 @@ window.addEventListener('load', () => {
                         let y, intensity
                         
                         switch (pattern) {
+                            case 'dataset':
+                                // Complex dataset similar to precalc-surface.json
+                                // Create multiple overlapping features for realistic data visualization
+                                
+                                // Primary wave patterns with different frequencies
+                                const wave1 = Math.sin(x * 0.7 + phase * 0.5) * Math.cos(z * 0.5 - phase * 0.3)
+                                const wave2 = Math.sin(x * 1.3 - z * 0.8 + phase * 0.7) * 0.3
+                                const wave3 = Math.cos(x * 0.4 + z * 0.6 - phase * 0.4) * 0.4
+                                
+                                // Localized peaks (like data clusters)
+                                const peak1 = Math.exp(-((x-2-Math.sin(phase*0.3))*(x-2-Math.sin(phase*0.3)) + 
+                                            (z-1-Math.cos(phase*0.3))*(z-1-Math.cos(phase*0.3))) / 3) * 0.8
+                                const peak2 = Math.exp(-((x+1)*(x+1) + (z+2)*(z+2)) / 4) * 0.6
+                                const peak3 = Math.exp(-((x-3.5)*(x-3.5) + (z+3.5)*(z+3.5)) / 2) * 0.5
+                                
+                                // Ridge features (like correlations in data)
+                                const ridge1 = Math.exp(-Math.pow(x + z * 0.5 - Math.sin(phase*0.2)*2, 2) / 5) * 0.7
+                                const ridge2 = Math.exp(-Math.pow(x * 0.3 - z + 1, 2) / 4) * 0.5
+                                
+                                // Background gradient (like trending data)
+                                const gradient = (x + z) * 0.008 + Math.sin(phase * 0.1) * 0.005
+                                
+                                // Combine all features
+                                const combined = wave1 * 0.2 + wave2 + wave3 * 0.15 + 
+                                               peak1 + peak2 + peak3 + 
+                                               ridge1 + ridge2 + gradient
+                                
+                                // Scale to match dataset range (0.005 to 0.045) with center at ~0.025
+                                y = 0.025 + combined * 0.008
+                                
+                                // Add fine-scale noise for realism
+                                y += Math.sin(x * 8 + z * 7) * 0.001
+                                y += Math.cos(x * 12 - z * 11 + phase * 2) * 0.0005
+                                
+                                // Ensure within realistic range
+                                y = Math.max(0.005, Math.min(0.045, y))
+                                intensity = y
+                                break
                             case 'wave':
                                 y = Math.sin(x - phase) * Math.cos(z - phase)
                                 intensity = y
