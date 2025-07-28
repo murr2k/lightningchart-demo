@@ -399,6 +399,169 @@ window.addEventListener('load', () => {
             })
         }
 
+        // 7. 3D Scatter Surface Chart
+        console.log('Creating 3D scatter surface chart...')
+        
+        try {
+            const scatterSurfaceChart = lc.Chart3D({
+                container: document.getElementById('chart-scatter-surface')
+            })
+            scatterSurfaceChart.setTitle('3D Scatter Surface - Interactive Data Visualization')
+            
+            // Variables for the chart
+            let pointSeries = null
+            let surfaceSeries = null
+            let currentResolution = 25
+            let currentPattern = 'wave'
+            
+            // Data generation functions for different patterns
+            const generateScatterSurfaceData = (pattern, resolution) => {
+                const points = []
+                const surfaceDataY = []
+                const intensityData = []
+                
+                for (let row = 0; row < resolution; row++) {
+                    const rowDataY = []
+                    const rowIntensity = []
+                    
+                    for (let col = 0; col < resolution; col++) {
+                        const x = -5 + (col / (resolution - 1)) * 10
+                        const z = -5 + (row / (resolution - 1)) * 10
+                        let y, intensity
+                        
+                        switch (pattern) {
+                            case 'wave':
+                                y = Math.sin(x) * Math.cos(z) + (Math.random() - 0.5) * 0.1
+                                intensity = y
+                                break
+                            case 'gaussian':
+                                // Multiple gaussian hills
+                                y = Math.exp(-(x*x + z*z) / 8) + 
+                                    0.5 * Math.exp(-((x-2)*(x-2) + (z-2)*(z-2)) / 4) +
+                                    0.7 * Math.exp(-((x+2)*(x+2) + (z+1)*(z+1)) / 6)
+                                intensity = y
+                                break
+                            case 'saddle':
+                                y = (x*x - z*z) / 25
+                                intensity = Math.abs(y)
+                                break
+                            case 'ripple':
+                                const r = Math.sqrt(x*x + z*z)
+                                y = Math.sin(r * 2) / (r + 1) * 3
+                                intensity = y
+                                break
+                        }
+                        
+                        // Add some noise to points
+                        const noisyY = y + (Math.random() - 0.5) * 0.05
+                        points.push({ x, y: noisyY, z })
+                        rowDataY.push(y)
+                        rowIntensity.push(intensity)
+                    }
+                    
+                    surfaceDataY.push(rowDataY)
+                    intensityData.push(rowIntensity)
+                }
+                
+                return { points, surfaceDataY, intensityData, resolution }
+            }
+            
+            // Create initial data
+            let data = generateScatterSurfaceData(currentPattern, currentResolution)
+            
+            // Add point series
+            pointSeries = scatterSurfaceChart.addPointSeries()
+                .setName('Scatter Points')
+                .add(data.points)
+                .setPointStyle((style) => style.setSize(3))
+            
+            // Add surface series
+            surfaceSeries = scatterSurfaceChart.addSurfaceGridSeries({
+                dataOrder: 'rows',
+                columns: currentResolution,
+                rows: currentResolution
+            })
+                .setName('Surface')
+                .setStart({ x: -5, z: -5 })
+                .setStep({ x: 10 / (currentResolution - 1), z: 10 / (currentResolution - 1) })
+                .invalidateHeightMap(data.surfaceDataY)
+            
+            // Configure axes
+            scatterSurfaceChart.getDefaultAxisX().setTitle('X Axis')
+            scatterSurfaceChart.getDefaultAxisY().setTitle('Y Axis (Height)')
+            scatterSurfaceChart.getDefaultAxisZ().setTitle('Z Axis')
+            
+            // Set camera position
+            scatterSurfaceChart.setCameraLocation({ x: 2.5, y: 2, z: 2.5 })
+            
+            // Update function
+            const updateScatterSurface = () => {
+                data = generateScatterSurfaceData(currentPattern, currentResolution)
+                
+                // Update point series
+                pointSeries.clear()
+                pointSeries.add(data.points)
+                
+                // Update surface series
+                surfaceSeries
+                    .setColumns(currentResolution)
+                    .setRows(currentResolution)
+                    .setStep({ x: 10 / (currentResolution - 1), z: 10 / (currentResolution - 1) })
+                    .invalidateHeightMap(data.surfaceDataY)
+            }
+            
+            // Control event listeners
+            const showPointsCheckbox = document.getElementById('show-points')
+            const showSurfaceCheckbox = document.getElementById('show-surface')
+            const resolutionSlider = document.getElementById('resolution-slider')
+            const resolutionValue = document.getElementById('resolution-value')
+            const resolutionValue2 = document.getElementById('resolution-value2')
+            const patternSelect = document.getElementById('pattern-select')
+            
+            if (showPointsCheckbox) {
+                showPointsCheckbox.addEventListener('change', (e) => {
+                    pointSeries.setVisible(e.target.checked)
+                })
+            }
+            
+            if (showSurfaceCheckbox) {
+                showSurfaceCheckbox.addEventListener('change', (e) => {
+                    surfaceSeries.setVisible(e.target.checked)
+                })
+            }
+            
+            if (resolutionSlider) {
+                resolutionSlider.addEventListener('input', (e) => {
+                    currentResolution = parseInt(e.target.value)
+                    resolutionValue.textContent = currentResolution
+                    resolutionValue2.textContent = currentResolution
+                    updateScatterSurface()
+                })
+            }
+            
+            if (patternSelect) {
+                patternSelect.addEventListener('change', (e) => {
+                    currentPattern = e.target.value
+                    updateScatterSurface()
+                })
+            }
+            
+            // Add legend
+            const legend = scatterSurfaceChart.addLegendBox()
+                .setAutoDispose({
+                    type: 'max-width',
+                    maxWidth: 0.2
+                })
+            
+            legend.add(pointSeries)
+            legend.add(surfaceSeries)
+            
+            console.log('3D scatter surface chart created successfully')
+            
+        } catch (error) {
+            console.error('3D scatter surface chart error:', error)
+        }
+        
         // Initial status
         updateStatus('All charts loaded successfully! Click "Start Real-time Data" to see live streaming.')
         

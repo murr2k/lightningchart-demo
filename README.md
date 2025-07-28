@@ -1,11 +1,11 @@
 # LightningChart JS Demo
 
-A comprehensive demonstration of LightningChart JS capabilities featuring 6 different chart types with real-time data visualization and interactive controls.
+A comprehensive demonstration of LightningChart JS capabilities featuring 7 different chart types with real-time data visualization and interactive controls.
 
 ![LightningChart JS](https://img.shields.io/badge/LightningChart-JS-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)
-![Version](https://img.shields.io/badge/version-1.1.0-orange)
+![Version](https://img.shields.io/badge/version-1.2.0-orange)
 
 ## 🚀 Features
 
@@ -17,6 +17,7 @@ This demo showcases:
 - **Area Chart** - Stacked area visualization
 - **Real-time Streaming Chart** - Live data updates with auto-scrolling
 - **3D Surface Plot** - Interactive 3D animated wave surface (with 2D heatmap fallback)
+- **3D Scatter Surface** - Combined scatter points and surface visualization
 
 ### Interactive Controls
 
@@ -24,6 +25,7 @@ This demo showcases:
 - **Add Random Data** - Dynamically add new data points
 - **Clear All Data** - Reset all charts to empty state
 - **3D Animation Controls** - Play/Pause animation and adjust wave frequency
+- **Scatter Surface Controls** - Toggle points/surface, adjust resolution, change patterns
 
 ## 📋 Prerequisites
 
@@ -112,6 +114,13 @@ lightningchart-demo/
 - Drag to rotate view
 - Falls back to 2D heatmap if WebGL unavailable
 
+### 7. 3D Scatter Surface
+- Dual visualization: scatter points and interpolated surface
+- Multiple data patterns: Wave, Gaussian Hills, Saddle Point, Ripple
+- Adjustable resolution from 10x10 to 50x50
+- Toggle between points, surface, or both views
+- Interactive legend and 3D rotation
+
 ## 🧪 Testing
 
 Run the automated tests using Playwright:
@@ -194,6 +203,13 @@ Key implementation details:
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 📈 Changelog
+
+### v1.2.0 (2025-07-28)
+- Added 3D Scatter Surface chart combining point cloud and surface visualization
+- Implemented multiple data patterns (Wave, Gaussian, Saddle, Ripple)
+- Added resolution control slider (10x10 to 50x50)
+- Toggle controls for showing/hiding points and surface independently
+- Interactive legend box for series visibility
 
 ### v1.1.0 (2025-07-28)
 - Added animated 3D surface plot with real-time wave animation
