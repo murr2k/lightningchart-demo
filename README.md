@@ -195,13 +195,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📈 Changelog
 
-### v1.1.0 (2025-01-28)
+### v1.1.0 (2025-07-28)
 - Added animated 3D surface plot with real-time wave animation
 - Implemented Play/Pause controls for 3D animation
 - Added frequency slider to control wave pattern (0.1 - 3.0 range)
 - Updated documentation with implementation details
 
-### v1.0.0 (2025-01-28)
+### v1.0.0 (2025-07-28)
 - Initial release with 6 chart types
 - Real-time streaming capabilities
 - Interactive controls
