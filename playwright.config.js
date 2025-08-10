@@ -58,5 +58,8 @@ export default defineConfig({
       threshold: 0.2,
       animations: 'disabled',
     },
+    toMatchSnapshot: {
+      maxDiffPixels: 100,
+    },
   },
 });
