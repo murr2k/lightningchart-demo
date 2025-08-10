@@ -48,7 +48,7 @@ Deploy the LightningChart demo application to Fly.io with automated CI/CD pipeli
 
 ## 🔧 Technical Implementation
 
-### 1. Fly.toml Configuration
+### 1. Fly.toml Configuration (Cost-Optimized)
 ```toml
 app = "lightning-chart"
 primary_region = "iad"
@@ -66,12 +66,14 @@ kill_timeout = 5
 [deploy]
   release_command = "echo 'Deployment successful'"
 
+# Single machine configuration with autostop
 [[services]]
   protocol = "tcp"
   internal_port = 8080
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 1
+  auto_stop_machines = true      # Stops machine when idle
+  auto_start_machines = true     # Starts on incoming request
+  min_machines_running = 0       # Allow scale to zero
+  max_machines_running = 1       # Maximum 1 machine
 
 [[services.ports]]
   port = 80
@@ -89,9 +91,11 @@ kill_timeout = 5
   method = "GET"
   path = "/"
 
-[metrics]
-  port = 9091
-  path = "/metrics"
+# Machine configuration
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256    # Minimum memory for static site
 ```
 
 ### 2. Dockerfile

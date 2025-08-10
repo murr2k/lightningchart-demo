@@ -1,0 +1,49 @@
+# Fly.io Configuration - Cost-Optimized
+# Single machine, single zone, with autostop for minimal costs
+
+app = "lightning-chart"
+primary_region = "iad"
+kill_signal = "SIGINT"
+kill_timeout = 5
+
+[build]
+  builder = "dockerfile"
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+
+[deploy]
+  release_command = "echo 'Deployment successful'"
+
+# Single machine configuration with autostop
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  auto_stop_machines = true      # Stops machine when idle (saves costs)
+  auto_start_machines = true     # Starts on incoming request (~300ms cold start)
+  min_machines_running = 0       # Allow scale to zero (no cost when idle)
+  max_machines_running = 1       # Maximum 1 machine (single zone)
+
+[[services.ports]]
+  port = 80
+  handlers = ["http"]
+  force_https = true
+
+[[services.ports]]
+  port = 443
+  handlers = ["tls", "http"]
+
+[[services.http_checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "10s"
+  method = "GET"
+  path = "/health"
+
+# Machine configuration - smallest size for static site
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256    # Minimum memory sufficient for nginx serving static files
