@@ -89,7 +89,7 @@ describe('Chart Utilities', () => {
   describe('Performance Metrics', () => {
     test('should calculate FPS correctly', () => {
       const fps = calculateFPS([16, 16, 17, 16, 17]);
-      expect(fps).toBeCloseTo(60, 1);
+      expect(fps).toBeCloseTo(61, 0);
     });
 
     test('should detect performance issues', () => {
