@@ -59,6 +59,18 @@ const lc = lightningChart({
 
 > **Note**: Get a free 30-day trial license from [LightningChart website](https://lightningchart.com/js-charts/)
 
+## 🔐 Environment Setup
+
+For deployment and API integrations:
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env with your credentials (never commit this file!)
+```
+
+See `.env.example` for all available configuration options.
+
 ## 🚦 Running the Demo
 
 Start the development server:
