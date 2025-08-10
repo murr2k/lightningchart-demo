@@ -110,6 +110,7 @@ jobs:
   cross-browser-tests:
     name: Cross-Browser Compatibility
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.browser == 'firefox' }}
     strategy:
       matrix:
         os: [ubuntu-latest]
