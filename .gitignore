@@ -21,10 +21,13 @@ build/
 .DS_Store
 
 # Test artifacts
-*.png
-!docs/*.png
 test-results/
 playwright-report/
+playwright/.cache/
+coverage/
+jest-report/
+# Visual regression snapshots - commit these for baseline
+!tests/e2e/__screenshots__/
 
 # Environment files
 .env
